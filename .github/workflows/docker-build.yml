@@ -24,6 +24,14 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
         if: github.event_name != 'pull_request'
 
+      - name: Free up disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /opt/ghc
+          docker system prune -af
+          df -h
+
       - name: Build and push
         uses: docker/build-push-action@v4
         with:
@@ -32,5 +40,6 @@ jobs:
           tags: linmaonly/ubuntu-pytorch-vnc:latest
           build-args: |
             FROM_TAG=23.09-py3
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          # Use no-cache to avoid disk space issues
+          no-cache: true
+          platforms: linux/amd64

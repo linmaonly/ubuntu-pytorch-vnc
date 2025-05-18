@@ -1,7 +1,7 @@
 # ==============================================================================
 # BASE
 
-ARG FROM_TAG
+ARG FROM_TAG=23.09-py3
 
 # https://catalog.ngc.nvidia.com/orgs/nvidia/containers/pytorch
 FROM nvcr.io/nvidia/pytorch:${FROM_TAG} as base
