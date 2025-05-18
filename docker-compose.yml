@@ -4,7 +4,7 @@ services:
       args:
         - FROM_TAG=23.09-py3
       context: .
-    container_name: cuda-desktop-server
+    container_name: ubuntu-pytorch-vnc-server
     deploy:
       resources:
         reservations:
@@ -15,7 +15,7 @@ services:
     environment:
       VNC_PASSWORD: "password"
       VNC_SCREEN_SIZE: "1920x1080"
-    image: ivangabriele/cuda-desktop:latest
+    image: linmaonly/ubuntu-pytorch-vnc:latest
     ipc: host
     logging:
       driver: json-file

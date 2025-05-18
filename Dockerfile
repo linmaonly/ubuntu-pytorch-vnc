@@ -49,6 +49,7 @@ RUN apt-get install -y \
   dbus-x11 \
   debconf-kde-helper \
   dolphin \
+  ffmpeg \
   file \
   fonts-dejavu \
   fonts-freefont-ttf \
@@ -67,10 +68,9 @@ RUN apt-get install -y \
   fonts-symbola \
   fonts-ubuntu \
   gcc \
+  gnome-terminal \
   gnupg \
   gzip \
-  i965-va-driver-shaders \
-  intel-media-va-driver-non-free \
   jq \
   kdeadmin \
   kde-config-fcitx \
@@ -149,6 +149,8 @@ RUN apt-get install -y \
   supervisor \
   systemd \
   tzdata \
+  vim \
+  vlc \
   x11-apps \
   x11-utils \
   x11-xkb-utils \
@@ -167,7 +169,6 @@ RUN apt-get install -y \
   xserver-xorg-input-all \
   xserver-xorg-input-wacom \
   xserver-xorg-video-all \
-  xserver-xorg-video-intel \
   xserver-xorg-video-qxl \
   xsettingsd \
   xz-utils \
@@ -177,6 +178,11 @@ RUN apt-get install -y \
 RUN add-apt-repository ppa:mozillateam/ppa && \
   apt-get update && \
   apt-get install -y firefox-esr
+
+# Configure GNOME Terminal to use bash by default
+RUN glib-compile-schemas /usr/share/glib-2.0/schemas && \
+  gsettings set org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/profiles:/:b1dcc9dd-5262-4d8d-a863-c897e6d979b9/ use-custom-command true && \
+  gsettings set org.gnome.Terminal.Legacy.Profile:/org/gnome/terminal/legacy/profiles:/:b1dcc9dd-5262-4d8d-a863-c897e6d979b9/ custom-command '/bin/bash'
 
 # Make Falkon the default browser
 RUN update-alternatives --set x-www-browser /usr/bin/firefox-esr
@@ -296,8 +302,8 @@ RUN touch /home/ubuntu/.Xauthority
 COPY ./home/ubuntu/* /home/ubuntu
 RUN cat /home/ubuntu/.zshrc.complement >> /home/ubuntu/.zshrc && \
   rm /home/ubuntu/.zshrc.complement
-# Make zsh the default shell
-RUN sudo chsh -s $(which zsh) $(whoami)
+# Make bash the default shell (bash is already the default, so we don't need to change it)
+# RUN sudo chsh -s $(which zsh) $(whoami)
 
 # ----------------------------------------------------------
 # SSH Server

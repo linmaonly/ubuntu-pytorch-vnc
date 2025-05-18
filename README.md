@@ -8,7 +8,7 @@ Ideal for LLM & Deep Learning remote work.
 
 ## Screenshot
 
-![CUDA Desktop](https://raw.githubusercontent.com/ivangabriele/docker-cuda-desktop/main/screenshot.png)
+![Ubuntu PyTorch VNC](https://raw.githubusercontent.com/ivangabriele/docker-cuda-desktop/main/screenshot.png)
 
 ## Content
 
@@ -21,14 +21,17 @@ Ideal for LLM & Deep Learning remote work.
 ### Main Applications
 
 - Firefox (ESR)
+- GNOME Terminal (default)
 - Kitty (terminal)
 - Sublime Text
 - Visual Studio Code (must be run with `--no-sandbox` flag)
+- ffmpeg
+- VLC
 
 ### Nice to Have
 
 - Fira Code (monospace font)
-- zsh (with oh-my-zsh)
+- bash (default shell)
 
 ## Tags
 
@@ -46,7 +49,7 @@ Pytorch tag as per [their official documentation](https://catalog.ngc.nvidia.com
 
 To connect to the container's desktop, you can use any VNC client.
 
-> [!NOTE]  
+> [!NOTE]
 > You will have a wide list of errors during startup but you can ignore them.
 > Enulating a full X server in Docker is not an easy task.
 
@@ -54,17 +57,46 @@ Your server will be ready once you see this line in the logs:
 
 ```bash
 [...]
-cuda-desktop-server  | Plasma Shell startup completed
+ubuntu-pytorch-vnc-server  | Plasma Shell startup completed
 [...]
 ```
 
 ## Deployment
 
+### GitHub and Docker Hub
+
+This repository is configured to automatically build and push the Docker image to Docker Hub using GitHub Actions.
+
+#### Setup GitHub Actions Secrets
+
+To enable automated builds, you need to add the following secrets to your GitHub repository:
+
+1. Go to your repository on GitHub
+2. Navigate to Settings > Secrets and variables > Actions
+3. Add the following secrets:
+   - `DOCKERHUB_USERNAME`: Your Docker Hub username
+   - `DOCKERHUB_TOKEN`: Your Docker Hub access token (create one at https://hub.docker.com/settings/security)
+
+#### Manual Push to GitHub
+
+```bash
+# Add your changes
+git add .
+
+# Commit your changes
+git commit -m "Your commit message"
+
+# Push to GitHub
+git push origin main
+```
+
+After pushing to GitHub, the GitHub Actions workflow will automatically build and push the Docker image to Docker Hub.
+
 ### RunPod
 
 [![img-runpod]][link-runpod]
 
-> [!NOTE]  
+> [!NOTE]
 > You can create and attach a Storage Network Volume to your RunPod pod
 > to automatically sync and persist your `/home/ubuntu` directory between deployments.
 
@@ -84,12 +116,12 @@ or Docker composer file. It will be automatically retored (on subsequent boots) 
 
 ---
 
-[img-docker]: https://img.shields.io/docker/pulls/ivangabriele/cuda-desktop?style=for-the-badge
+[img-docker]: https://img.shields.io/docker/pulls/linmaonly/ubuntu-pytorch-vnc?style=for-the-badge
 [img-runpod]: https://img.shields.io/badge/RunPod-Deploy-673ab7?style=for-the-badge
 [img-github]: https://img.shields.io/badge/Github-Repo-black?logo=github&style=for-the-badge
-[img-github-actions]: https://img.shields.io/github/actions/workflow/status/ivangabriele/docker-cuda-desktop/main.yml?branch=main&style=for-the-badge
+[img-github-actions]: https://img.shields.io/github/actions/workflow/status/linmaonly/ubuntu-pytorch-vnc/main.yml?branch=main&style=for-the-badge
 
-[link-docker]: https://hub.docker.com/r/ivangabriele/cuda-desktop
-[link-github]: https://github.com/ivangabriele/docker-cuda-desktop
-[link-github-actions]: https://github.com/ivangabriele/docker-cuda-desktop/actions/workflows/main.yml
+[link-docker]: https://hub.docker.com/r/linmaonly/ubuntu-pytorch-vnc
+[link-github]: https://github.com/linmaonly/ubuntu-pytorch-vnc
+[link-github-actions]: https://github.com/linmaonly/ubuntu-pytorch-vnc/actions/workflows/main.yml
 [link-runpod]: https://runpod.io/gsc?template=fc1g5zbii8&ref=s0k66ov1
