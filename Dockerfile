@@ -71,6 +71,8 @@ RUN apt-get install -y \
   gnome-terminal \
   gnupg \
   gzip \
+  i965-va-driver-shaders \
+  intel-media-va-driver-non-free \
   jq \
   kdeadmin \
   kde-config-fcitx \
@@ -263,8 +265,6 @@ RUN mkdir -p ~/.local/bin ~/.local/share/applications && \
   sed -i "s|Icon=kitty|Icon=/home/$USER/.local/kitty.app/share/icons/hicolor/256x256/apps/kitty.png|g" ~/.local/share/applications/kitty*.desktop && \
   sed -i "s|Exec=kitty|Exec=/home/$USER/.local/kitty.app/bin/kitty|g" ~/.local/share/applications/kitty*.desktop
 
-# Oh My Zsh
-RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 
 # Sublime Text
 # https://www.geeksforgeeks.org/how-to-install-sublime-text-editor-on-ubuntu/
@@ -308,18 +308,12 @@ USER root
 RUN apt-get update && \
     apt-get install -y openssh-server && \
     mkdir -p /var/run/sshd && \
-    # Create empty config file if it doesn't exist
-    touch /etc/ssh/sshd_config && \
-    # Modify sshd_config settings
+    # Configure SSH server and generate host keys
     echo "PermitRootLogin no" >> /etc/ssh/sshd_config && \
     echo "PubkeyAuthentication yes" >> /etc/ssh/sshd_config && \
     echo "PasswordAuthentication no" >> /etc/ssh/sshd_config && \
     echo "AllowUsers ubuntu" >> /etc/ssh/sshd_config && \
-    # Create rc.local if it doesn't exist
-    touch /etc/rc.local && \
-    echo "#!/bin/sh" > /etc/rc.local && \
-    echo "service ssh start" >> /etc/rc.local && \
-    chmod +x /etc/rc.local
+    ssh-keygen -A
 
 # Setup SSH directory for the ubuntu user
 USER ubuntu
@@ -332,8 +326,10 @@ EXPOSE 22
 
 # Final setup
 USER root
-COPY ./entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+# Create entrypoint script that starts SSH server
+RUN printf '#!/bin/bash\n/usr/sbin/sshd\nexec "$@"\n' > /entrypoint.sh && \
+    chmod +x /entrypoint.sh
 
 USER ubuntu
 ENTRYPOINT ["/entrypoint.sh"]
+CMD ["/bin/bash", "-c", "while true; do sleep 1000; done"]
