@@ -299,6 +299,28 @@ RUN cat /home/ubuntu/.zshrc.complement >> /home/ubuntu/.zshrc && \
 # Make zsh the default shell
 RUN sudo chsh -s $(which zsh) $(whoami)
 
+# ----------------------------------------------------------
+# SSH Server
+
+RUN apt-get install -y openssh-server && \
+  mkdir -p /var/run/sshd && \
+  sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin no/' /etc/ssh/sshd_config && \
+  sed -i 's/#PubkeyAuthentication yes/PubkeyAuthentication yes/' /etc/ssh/sshd_config && \
+  sed -i 's/#PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config && \
+  echo "AllowUsers ubuntu" >> /etc/ssh/sshd_config && \
+  echo "# Enable ssh-rcd for service management" >> /etc/ssh/sshd_config && \
+  echo "service ssh start" >> /etc/rc.local && \
+  chmod +x /etc/rc.local
+
+# Setup SSH directory for the ubuntu user
+RUN mkdir -p /home/ubuntu/.ssh && \
+  chmod 700 /home/ubuntu/.ssh && \
+  echo "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIF+QCDN/8u0XFAkGOW5SQvepCJWLNH8DjGvhCi5yncjH lma@Lins-MacBook-Air.local" > /home/ubuntu/.ssh/authorized_keys && \
+  chmod 600 /home/ubuntu/.ssh/authorized_keys && \
+  chown -R ubuntu:ubuntu /home/ubuntu/.ssh
+
+EXPOSE 22
+
 COPY ./entrypoint.sh /entrypoint.sh
 
 ENTRYPOINT ["/entrypoint.sh"]
